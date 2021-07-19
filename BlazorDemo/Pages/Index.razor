@@ -1,0 +1,65 @@
+﻿@page "/"
+<div>
+    Filter for software:
+</div>
+<EditForm Model="@validation" OnValidSubmit="@HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+    <DataAnnotationsValidator />
+    <input type="text" class="form-control" @bind-value="@validation.Input" placeholder="enter search" />
+    <p>
+        <button type="submit" class="btn btn-info" Style="margin-top:10px">Search</button>
+    </p>
+    @if (displayValidationError)
+    {
+        <div class="col-md-4" style="margin-top:10px">
+            <label>Validation Messages: </label>
+            <ValidationSummary />
+        </div>
+    }
+</EditForm>
+<table>
+    <tbody>
+
+        @if (filteredSoftware != null)
+        {
+            <tr>
+                <th>Software Name</th>
+                <th>Software Version</th>
+            </tr>
+
+            foreach (var item in filteredSoftware)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Version</td>
+                </tr>
+            }
+        }
+
+    </tbody>
+</table>
+
+
+@code{
+    private string sofwareName { get; set; } = "";
+    private string softwareVersion { get; set; } = "";
+    private List<Software> filteredSoftware;
+    Validation validation = new Validation();
+    bool displayValidationError = false;
+    
+
+    private void HandleValidSubmit(EditContext context)
+    {
+        displayValidationError = false;
+        GetSoftwareList();
+    }
+    private void HandleInvalidSubmit(EditContext context)
+    {
+        displayValidationError = true;
+    }
+   
+
+    public void GetSoftwareList()
+    {
+        filteredSoftware = SoftwareFilter.FilterSoftware(validation.Input);
+    }
+}
